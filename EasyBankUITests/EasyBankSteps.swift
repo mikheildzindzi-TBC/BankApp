@@ -27,17 +27,6 @@ final class EasyBankSteps {
         }
     }
 
-    private func typeVisiblePassword(_ password: String,
-                                 secureField: XCUIElement,
-                                 toggle: XCUIElement,
-                                 visibleField: XCUIElement) {
-        waitAndTap(secureField)
-        dismissStrongPasswordPromptIfShown()
-        waitAndTap(toggle)
-        waitAndTap(visibleField)
-        visibleField.typeText(password)
-    }
-
     // MARK: Navigation
     @discardableResult
     func openLogin() -> Self {
@@ -72,21 +61,34 @@ final class EasyBankSteps {
         return self
     }
 
+    private func typeVisiblePassword(_ password: String,
+                                 secureField: XCUIElement,
+                                 toggle: XCUIElement,
+                                 visibleField: XCUIElement,
+                                 file: StaticString = #filePath, line: UInt = #line) {
+    XCTAssertTrue(WaitHelper.waitForExistence(secureField), "Password field not found", file: file, line: line)
+    waitAndTap(toggle, file: file, line: line)          // reveal BEFORE the field gets focus
+    waitAndTap(visibleField, file: file, line: line)    // now it is a normal text field
+    visibleField.typeText(password)
+    XCTAssertEqual(visibleField.value as? String, password,
+                   "Password was not typed correctly", file: file, line: line)
+}
+
     // MARK: Registration
     @discardableResult
-    func register(email: String, password: String) -> Self {
-        type(email, into: page.registrationEmailField())
-        typeVisiblePassword(password,
-                            secureField: page.registrationPasswordField(),
-                            toggle: page.registrationPasswordToggle(),
-                            visibleField: page.registrationPasswordVisibleField())
-        typeVisiblePassword(password,
-                            secureField: page.registrationRepeatPasswordField(),
-                            toggle: page.registrationRepeatPasswordToggle(),
-                            visibleField: page.registrationRepeatPasswordVisibleField())
-        waitAndTap(page.registrationSubmitButton())
-        return self
-    }
+func register(email: String, password: String) -> Self {
+    type(email, into: page.registrationEmailField())
+    typeVisiblePassword(password,
+                        secureField: page.registrationPasswordField(),
+                        toggle: page.registrationPasswordToggle(),
+                        visibleField: page.registrationPasswordVisibleField())
+    typeVisiblePassword(password,
+                        secureField: page.registrationRepeatPasswordField(),
+                        toggle: page.registrationRepeatPasswordToggle(),
+                        visibleField: page.registrationRepeatPasswordVisibleField())
+    waitAndTap(page.registrationSubmitButton())
+    return self
+}
 
     // MARK: Home / logout
     @discardableResult

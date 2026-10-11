@@ -23,8 +23,8 @@ final class EasyBankPage {
     func registrationPasswordField() -> XCUIElement { app.secureTextFields["registration.password"] }
     func registrationRepeatPasswordField() -> XCUIElement { app.secureTextFields["registration.repeatPassword"] }
     func registrationSubmitButton() -> XCUIElement { app.buttons["registration.submit"] }
-    
-    // Visibility toggle inside each password field (secure state: "hide")
+
+    // Visibility toggle inside each password field (secure state label: "hide")
     func registrationPasswordToggle() -> XCUIElement { registrationPasswordField().buttons["hide"] }
     func registrationRepeatPasswordToggle() -> XCUIElement { registrationRepeatPasswordField().buttons["hide"] }
 
