@@ -27,6 +27,17 @@ final class EasyBankSteps {
         }
     }
 
+    private func typeVisiblePassword(_ password: String,
+                                 secureField: XCUIElement,
+                                 toggle: XCUIElement,
+                                 visibleField: XCUIElement) {
+        waitAndTap(secureField)
+        dismissStrongPasswordPromptIfShown()
+        waitAndTap(toggle)
+        waitAndTap(visibleField)
+        visibleField.typeText(password)
+    }
+
     // MARK: Navigation
     @discardableResult
     func openLogin() -> Self {
@@ -65,12 +76,14 @@ final class EasyBankSteps {
     @discardableResult
     func register(email: String, password: String) -> Self {
         type(email, into: page.registrationEmailField())
-        waitAndTap(page.registrationPasswordField())
-        dismissStrongPasswordPromptIfShown()
-        page.registrationPasswordField().typeText(password)
-        waitAndTap(page.registrationRepeatPasswordField())
-        dismissStrongPasswordPromptIfShown()
-        page.registrationRepeatPasswordField().typeText(password)
+        typeVisiblePassword(password,
+                            secureField: page.registrationPasswordField(),
+                            toggle: page.registrationPasswordToggle(),
+                            visibleField: page.registrationPasswordVisibleField())
+        typeVisiblePassword(password,
+                            secureField: page.registrationRepeatPasswordField(),
+                            toggle: page.registrationRepeatPasswordToggle(),
+                            visibleField: page.registrationRepeatPasswordVisibleField())
         waitAndTap(page.registrationSubmitButton())
         return self
     }
